@@ -60,11 +60,11 @@ defmodule KubaEngine.Channel do
   end
 
   def handle_call({:join, nick}, _from, state) do
-    {:reply, state, %{ state | users: [nick | state.users]}}
+    {:reply, state, %{ state | messages: [join_message(nick) | state.messages], users: [nick | state.users]}}
   end
 
   def handle_call({:leave, nick}, _from, state) do
-    {:reply, state, %{ state | users: List.delete(state.users, nick)}}
+    {:reply, state, %{ state | messages: [leave_message(nick) | state.messages], users: List.delete(state.users, nick)}}
   end
 
   def handle_call(:messages, _from, state) do
@@ -78,5 +78,15 @@ defmodule KubaEngine.Channel do
   defp noreply_success(state_data) do
     :ets.insert(:channel_state, {state_data.name, state_data})
     {:noreply, state_data}
+  end
+
+  defp join_message(nick) do
+    {:ok, message} = KubaEngine.SystemMessage.new("#{nick} joined")
+    message
+  end
+
+  defp leave_message(nick) do
+    {:ok, message} = KubaEngine.SystemMessage.new("#{nick} left")
+    message
   end
 end
