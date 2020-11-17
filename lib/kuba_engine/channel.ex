@@ -34,6 +34,10 @@ defmodule KubaEngine.Channel do
     GenServer.call(via_tuple(name), {:join, nick})
   end
 
+  def leave(name, nick) do
+    GenServer.call(via_tuple(name), {:leave, nick})
+  end
+
   def channel_for(name) do
     GenServer.call(via_tuple(name), :channel)
   end
@@ -57,6 +61,10 @@ defmodule KubaEngine.Channel do
 
   def handle_call({:join, nick}, _from, state) do
     {:reply, state, %{ state | users: [nick | state.users]}}
+  end
+
+  def handle_call({:leave, nick}, _from, state) do
+    {:reply, state, %{ state | users: List.delete(state.users, nick)}}
   end
 
   def handle_call(:messages, _from, state) do
