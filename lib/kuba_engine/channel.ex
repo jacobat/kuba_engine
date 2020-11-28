@@ -21,6 +21,8 @@ defmodule KubaEngine.Channel do
     {:ok, state_data }
   end
 
+  def exist?(name), do: !Enum.empty?(Registry.lookup(Registry.Channel, name))
+
   defp fresh_state(name), do:
     %Channel{name: name, ref: make_ref(), messages: [], users: []}
 
