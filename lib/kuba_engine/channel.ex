@@ -28,6 +28,8 @@ defmodule KubaEngine.Channel do
 
   def via_tuple(name), do: {:via, Registry, {Registry.Channel, name}}
 
+  def name(pid), do: GenServer.call(pid, :name)
+
   def new(name) do
     init(name)
   end
@@ -71,6 +73,10 @@ defmodule KubaEngine.Channel do
 
   def handle_call(:messages, _from, state) do
     {:reply, state.messages, state}
+  end
+
+  def handle_call(:name, _from, state) do
+    {:reply, state.name, state}
   end
 
   def handle_cast({:speak, message}, state) do

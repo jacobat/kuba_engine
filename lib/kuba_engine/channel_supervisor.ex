@@ -18,6 +18,11 @@ defmodule KubaEngine.ChannelSupervisor do
     end
   end
 
+  def names do
+    DynamicSupervisor.which_children(__MODULE__)
+    |> Enum.map(fn {_, pid, _, _} -> KubaEngine.Channel.name(pid) end)
+  end
+
   def stop_channel(name), do: DynamicSupervisor.terminate_child(__MODULE__, pid_from_name(name))
 
   defp pid_from_name(name) do
