@@ -1,5 +1,5 @@
 defmodule KubaEngine.Channel do
-  use GenServer, start: {__MODULE__, :start_link, []}, restart: :transient
+  use GenServer
 
   alias __MODULE__
 
