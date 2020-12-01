@@ -4,11 +4,19 @@ defmodule KubaEngine.SystemMessage do
   defstruct [:body, :datetime]
 
   def new(body) do
-    { :ok, %SystemMessage{body: body, datetime: now() } }
+    %SystemMessage{body: body, datetime: now()}
   end
 
   def new(body, datetime) do
-    { :ok, %SystemMessage{body: body, datetime: datetime} }
+    %SystemMessage{body: body, datetime: datetime}
+  end
+
+  def join(nick) do
+    new("#{nick} joined")
+  end
+
+  def leave(nick) do
+    new("#{nick} left")
   end
 
   def now do
@@ -16,4 +24,3 @@ defmodule KubaEngine.SystemMessage do
     now
   end
 end
-

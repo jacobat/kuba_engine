@@ -24,7 +24,7 @@ defmodule KubaEngine.Channel do
   def exist?(name), do: !Enum.empty?(Registry.lookup(Registry.Channel, name))
 
   defp fresh_state(name), do:
-    %Channel{name: name, ref: make_ref(), messages: [], users: []}
+    %Channel{name: name, ref: make_ref(), messages: [], users: MapSet.new}
 
   def via_tuple(name), do: {:via, Registry, {Registry.Channel, name}}
 
@@ -34,12 +34,12 @@ defmodule KubaEngine.Channel do
     init(name)
   end
 
-  def join(name, nick) do
-    GenServer.call(via_tuple(name), {:join, nick})
+  def join(name, user) do
+    GenServer.call(via_tuple(name), {:join, user})
   end
 
-  def leave(name, nick) do
-    GenServer.call(via_tuple(name), {:leave, nick})
+  def leave(name, user) do
+    GenServer.call(via_tuple(name), {:leave, user})
   end
 
   def channel_for(name) do
@@ -63,12 +63,18 @@ defmodule KubaEngine.Channel do
     {:reply, state, state}
   end
 
-  def handle_call({:join, nick}, _from, state) do
-    {:reply, state, %{ state | messages: [join_message(nick) | state.messages], users: [nick | state.users]}}
+  def handle_call({:join, user}, _from, state) do
+    if MapSet.member?(state.users, user) do
+      {:reply, state, state}
+    else
+      new_users = MapSet.put(state.users, user)
+      {:reply, state, %{ state | messages: [join_message(user.nick) | state.messages], users: new_users }}
+    end
   end
 
-  def handle_call({:leave, nick}, _from, state) do
-    {:reply, state, %{ state | messages: [leave_message(nick) | state.messages], users: List.delete(state.users, nick)}}
+  def handle_call({:leave, user}, _from, state) do
+    new_users = MapSet.delete(state.users, user)
+    {:reply, state, %{ state | messages: [leave_message(user.nick) | state.messages], users: new_users}}
   end
 
   def handle_call(:messages, _from, state) do
@@ -89,12 +95,10 @@ defmodule KubaEngine.Channel do
   end
 
   defp join_message(nick) do
-    {:ok, message} = KubaEngine.SystemMessage.new("#{nick} joined")
-    message
+    KubaEngine.SystemMessage.join(nick)
   end
 
   defp leave_message(nick) do
-    {:ok, message} = KubaEngine.SystemMessage.new("#{nick} left")
-    message
+    KubaEngine.SystemMessage.leave(nick)
   end
 end
