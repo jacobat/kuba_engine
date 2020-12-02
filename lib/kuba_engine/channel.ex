@@ -34,6 +34,10 @@ defmodule KubaEngine.Channel do
     init(name)
   end
 
+  def member?(name, user) do
+    GenServer.call(via_tuple(name), {:member?, user})
+  end
+
   def join(name, user) do
     GenServer.call(via_tuple(name), {:join, user})
   end
@@ -61,6 +65,10 @@ defmodule KubaEngine.Channel do
 
   def handle_call(:channel, _from, state) do
     {:reply, state, state}
+  end
+
+  def handle_call({:member?, user}, _from, state) do
+    {:reply, MapSet.member?(state.users, user), state}
   end
 
   def handle_call({:join, user}, _from, state) do
