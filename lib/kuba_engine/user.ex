@@ -4,6 +4,6 @@ defmodule KubaEngine.User do
   defstruct [:nick, :ref]
 
   def new(nick) do
-    %User{nick: nick, ref: make_ref}
+    %User{nick: nick, ref: make_ref()}
   end
 end
