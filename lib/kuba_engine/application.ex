@@ -11,6 +11,7 @@ defmodule KubaEngine.Application do
       # Starts a worker by calling: KubaEngine.Worker.start_link(arg)
       # {KubaEngine.Worker, arg}
       {Registry, keys: :unique, name: Registry.Channel},
+      {Phoenix.PubSub, name: :my_pubsub},
       KubaEngine.ChannelSupervisor
     ]
 
