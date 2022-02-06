@@ -10,7 +10,7 @@ defmodule KubaEngine.Application do
     children = [
       # Starts a worker by calling: KubaEngine.Worker.start_link(arg)
       # {KubaEngine.Worker, arg}
-      {Registry, keys: :unique, name: Registry.Channel},
+      {Registry, keys: :unique, name: Registry.ChannelServer},
       {Phoenix.PubSub, name: :my_pubsub},
       KubaEngine.ChannelSupervisor
     ]

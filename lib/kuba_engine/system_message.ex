@@ -20,7 +20,7 @@ defmodule KubaEngine.SystemMessage do
   end
 
   def now do
-    { :ok, now } = DateTime.now("Etc/UTC")
+    {:ok, now} = DateTime.now("Etc/UTC")
     now
   end
 end
